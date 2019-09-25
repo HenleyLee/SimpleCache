@@ -1,6 +1,7 @@
 package com.henley.simplecache.sample;
 
 import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -29,7 +30,7 @@ public class CacheDrawableActivity extends BaseActivity {
      */
     @Override
     public void save(View v) {
-        Drawable drawable = getResources().getDrawable(R.drawable.img_test);
+        Drawable drawable = ContextCompat.getDrawable(this, R.drawable.img_test);
         boolean result = mCache.put(CACHE_KEY, drawable);
         if (result) {
             Toast.makeText(this, "Drawable cache successfully.", Toast.LENGTH_SHORT).show();
