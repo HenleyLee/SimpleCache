@@ -1,0 +1,63 @@
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <Button
+            android:id="@+id/btn_save_string"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="string"
+            android:text="Cache String" />
+
+        <Button
+            android:id="@+id/btn_save_jsonobject"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="jsonObject"
+            android:text="Cache JsonObject" />
+
+        <Button
+            android:id="@+id/btn_save_jsonarray"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="jsonArray"
+            android:text="Cache JsonArray" />
+
+        <Button
+            android:id="@+id/btn_save_bitmap"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="bitmap"
+            android:text="Cache Bitmap" />
+
+        <Button
+            android:id="@+id/btn_save_drawable"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="drawable"
+            android:text="Cache Drawable" />
+
+        <Button
+            android:id="@+id/btn_save_object"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="object"
+            android:text="Cache Object" />
+
+        <Button
+            android:id="@+id/btn_save_file"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="stream"
+            android:text="Cache Stream" />
+
+    </LinearLayout>
+
+</android.support.v4.widget.NestedScrollView>
