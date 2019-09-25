@@ -55,10 +55,16 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class ACache {
 
+    //<editor-fold desc="公有常量">
+
     /** 缓存保存时间(1小时) */
     public static final int TIME_HOUR = 60 * 60;
     /** 缓存保存时间(1天) */
     public static final int TIME_DAY = TIME_HOUR * 24;
+
+    //</editor-fold>
+
+    //<editor-fold desc="私有常量">
 
     /** TAG */
     private static final String TAG = "ACache";
@@ -69,10 +75,18 @@ public class ACache {
     /** 默认的缓存数量(不限制) */
     private static final int MAX_COUNT = Integer.MAX_VALUE;
 
+    //</editor-fold>
+
+    //<editor-fold desc="私有变量">
+
     /** 缓存管理器 */
     private ACacheManager mCacheManager;
     /** 声明一个Map，用于存放ACache对象 */
     private static Map<String, ACache> mInstanceMap = new HashMap<String, ACache>();
+
+    //</editor-fold>
+
+    //<editor-fold desc="获取实例">
 
     /**
      * 获取{@link ACache}实例
@@ -170,6 +184,10 @@ public class ACache {
         mCacheManager = new ACacheManager(cacheDir, maxSize, maxCount);
     }
 
+    //</editor-fold>
+
+    //<editor-fold desc="读写String数据">
+
     /**
      * 保存{@link String}数据到缓存中
      *
@@ -236,6 +254,10 @@ public class ACache {
         }
     }
 
+    //</editor-fold>
+
+    //<editor-fold desc="读写JSONObject数据">
+
     /**
      * 保存{@link JSONObject}数据到缓存中
      *
@@ -279,6 +301,10 @@ public class ACache {
         }
     }
 
+    //</editor-fold>
+
+    //<editor-fold desc="读写JSONArray数据">
+
     /**
      * 保存{@link JSONArray}数据到缓存中
      *
@@ -321,6 +347,10 @@ public class ACache {
             return null;
         }
     }
+
+    //</editor-fold>
+
+    //<editor-fold desc="读写byte[]数据">
 
     /**
      * 保存{@code byte[]}数据到缓存中
@@ -386,6 +416,10 @@ public class ACache {
         }
     }
 
+    //</editor-fold>
+
+    //<editor-fold desc="读写序列化数据">
+
     /**
      * 保存{@link Serializable}数据到缓存中
      *
@@ -450,6 +484,10 @@ public class ACache {
         }
     }
 
+    //</editor-fold>
+
+    //<editor-fold desc="读写Bitmap数据">
+
     /**
      * 保存{@link Bitmap}到缓存中
      *
@@ -487,6 +525,10 @@ public class ACache {
         }
         return Utils.bytes2Bitmap(bytes);
     }
+
+    //</editor-fold>
+
+    //<editor-fold desc="读写Drawable数据">
 
     /**
      * 保存{@link Drawable}到缓存中
@@ -526,6 +568,10 @@ public class ACache {
         return Utils.bitmap2Drawable(Utils.bytes2Bitmap(bytes));
     }
 
+    //</editor-fold>
+
+    //<editor-fold desc="读写Stream数据">
+
     /**
      * Cache for a stream
      *
@@ -549,6 +595,10 @@ public class ACache {
         }
         return new FileInputStream(file);
     }
+
+    //</editor-fold>
+
+    //<editor-fold desc="操作数据">
 
     /**
      * 获取缓存文件
@@ -580,6 +630,10 @@ public class ACache {
     public void clear() {
         mCacheManager.clear();
     }
+
+    //</editor-fold>
+
+    //<editor-fold desc="内部类">
 
     /**
      * Provides a means to save a cached file before the data are available.
