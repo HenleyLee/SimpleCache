@@ -70,8 +70,7 @@ public class CacheJsonArrayActivity extends BaseActivity {
     public void read(View v) {
         JSONArray cacheJsonArray = mCache.getAsJSONArray(CACHE_KEY);
         if (cacheJsonArray == null) {
-            Toast.makeText(this, "JSONArray cache is null ...",
-                    Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "JSONArray cache is null ...", Toast.LENGTH_SHORT).show();
             tvRes.setText(null);
             return;
         }

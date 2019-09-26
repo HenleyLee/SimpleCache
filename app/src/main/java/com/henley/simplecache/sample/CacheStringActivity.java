@@ -5,6 +5,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.henley.simplecache.ACache;
+
 /**
  * 缓存String
  */
@@ -31,10 +33,12 @@ public class CacheStringActivity extends BaseActivity {
      */
     @Override
     public void save(View v) {
-        if (edtInput.getText().toString().trim().length() == 0) {
+        String text = edtInput.getText().toString();
+        if (text.trim().isEmpty()) {
             Toast.makeText(this, "input is a null character ... So , when u press \"read\" , if do not show any result , please don't be surprise", Toast.LENGTH_SHORT).show();
+            return;
         }
-        boolean result = mCache.put(CACHE_KEY, edtInput.getText().toString());
+        boolean result = mCache.put(CACHE_KEY, text, ACache.TIME_HOUR);
         if (result) {
             Toast.makeText(this, "String cache successfully.", Toast.LENGTH_SHORT).show();
         }

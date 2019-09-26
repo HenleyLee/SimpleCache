@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.henley.simplecache.ACache;
 import com.henley.simplecache.sample.beans.User;
 
 /**
@@ -48,7 +49,7 @@ public class CacheObjectActivity extends BaseActivity {
      */
     @Override
     public void save(View v) {
-        boolean result = mCache.put(CACHE_KEY, user);
+        boolean result = mCache.put(CACHE_KEY, user, ACache.TIME_DAY);
         if (result) {
             Toast.makeText(this, "Object cache successfully.", Toast.LENGTH_SHORT).show();
         }
