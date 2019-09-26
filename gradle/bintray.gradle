@@ -21,7 +21,7 @@ publish {
     userOrg = 'henleylee'
     groupId = 'com.henley.android'
     artifactId = 'simplecache'
-    publishVersion = '1.0.3'
+    publishVersion = '1.0.0'
     uploadName = 'SimpleCache'
     desc = 'SimpleCache 是一个为 Android 制定的轻量级的缓存框架。'
     website = siteUrl
