@@ -30,6 +30,9 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.io.Serializable;
+import java.nio.charset.Charset;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -135,7 +138,7 @@ public class ACache {
      * @see #get(File, long, int)
      */
     public static ACache get(Context context, String cacheName, long maxSize, int maxCount) {
-        return get(new File(context.getCacheDir(), cacheName), maxSize, maxCount);
+        return get(new File(context.getExternalCacheDir(), cacheName), maxSize, maxCount);
     }
 
     /**
@@ -713,7 +716,7 @@ public class ACache {
         private void put(File file) {
             int curCacheCount = cacheCount.get();
             while (curCacheCount + 1 > countLimit) {
-                long freedSize = removeNext();
+                long freedSize = removeOldestFile();
                 cacheSize.addAndGet(-freedSize);
 
                 curCacheCount = cacheCount.addAndGet(-1);
@@ -723,7 +726,7 @@ public class ACache {
             long valueSize = calculateSize(file);
             long curCacheSize = cacheSize.get();
             while (curCacheSize + valueSize > sizeLimit) {
-                long freedSize = removeNext();
+                long freedSize = removeOldestFile();
                 curCacheSize = cacheSize.addAndGet(-freedSize);
             }
             cacheSize.addAndGet(valueSize);
@@ -752,7 +755,8 @@ public class ACache {
          * 创建新的文件实例
          */
         private File newFile(String key) {
-            return new File(cacheDir, String.valueOf(key.hashCode()));
+            String safeKey = Utils.generateSafeKey(key);
+            return new File(cacheDir, safeKey);
         }
 
         /**
@@ -783,32 +787,30 @@ public class ACache {
         /**
          * 移除旧的文件
          */
-        private long removeNext() {
+        private long removeOldestFile() {
             if (lastUsageDates.isEmpty()) {
                 return 0;
             }
-
             Long oldestUsage = null;
-            File mostLongUsedFile = null;
-            Set<Entry<File, Long>> entries = lastUsageDates.entrySet();
+            File oldestUsedFile = null;
+            Set<Entry<File, Long>> entrySet = lastUsageDates.entrySet();
             synchronized (lastUsageDates) {
-                for (Entry<File, Long> entry : entries) {
-                    if (mostLongUsedFile == null) {
-                        mostLongUsedFile = entry.getKey();
+                for (Entry<File, Long> entry : entrySet) {
+                    if (oldestUsedFile == null) {
+                        oldestUsedFile = entry.getKey();
                         oldestUsage = entry.getValue();
                     } else {
                         Long lastValueUsage = entry.getValue();
                         if (lastValueUsage < oldestUsage) {
                             oldestUsage = lastValueUsage;
-                            mostLongUsedFile = entry.getKey();
+                            oldestUsedFile = entry.getKey();
                         }
                     }
                 }
             }
-
-            long fileSize = calculateSize(mostLongUsedFile);
-            if (mostLongUsedFile != null && mostLongUsedFile.delete()) {
-                lastUsageDates.remove(mostLongUsedFile);
+            long fileSize = calculateSize(oldestUsedFile);
+            if (oldestUsedFile != null && oldestUsedFile.delete()) {
+                lastUsageDates.remove(oldestUsedFile);
             }
             return fileSize;
         }
@@ -827,6 +829,10 @@ public class ACache {
     private static final class Utils {
 
         private static final char SEPARATOR = ' ';
+        private static final char[] HEX_CHAR_ARRAY = "0123456789abcdef".toCharArray();
+        // 32 bytes from sha-256 -> 64 hex chars.
+        private static final char[] SHA_256_CHARS = new char[64];
+        private static final Charset CHARSET = Charset.forName("UTF-8");
 
         /**
          * 判断缓存的String数据是否到期
@@ -1048,17 +1054,48 @@ public class ACache {
             return drawable;
         }
 
+        /**
+         * 生成安全的Key
+         */
+        private static String generateSafeKey(String key) {
+            try {
+                MessageDigest digest = MessageDigest.getInstance("SHA-256");
+                byte[] bytes = digest.digest(key.getBytes(CHARSET));
+                synchronized (SHA_256_CHARS) {
+                    return bytesToHex(bytes);
+                }
+            } catch (NoSuchAlgorithmException e) {
+                return String.valueOf(key.hashCode());
+            }
+        }
+
+        /**
+         * byte[]转换为hex
+         * <p>
+         * Taken from: http://stackoverflow.com/questions/9655181/convert-from-byte-array-to-hex-string-in-java
+         */
+        private static String bytesToHex(byte[] bytes) {
+            int v;
+            for (int j = 0; j < bytes.length; j++) {
+                v = bytes[j] & 0xFF;
+                SHA_256_CHARS[j * 2] = HEX_CHAR_ARRAY[v >>> 4];
+                SHA_256_CHARS[j * 2 + 1] = HEX_CHAR_ARRAY[v & 0x0F];
+            }
+            return new String(SHA_256_CHARS);
+        }
+
+        /**
+         * 关闭I/O并忽略异常
+         */
         private static void closeIOQuietly(Closeable... closeables) {
             if (closeables == null || closeables.length <= 0) {
                 return;
             }
             for (Closeable closeable : closeables) {
-                if (closeable != null) {
-                    try {
-                        closeable.close();
-                    } catch (IOException ignored) {
-                        // ignore
-                    }
+                try {
+                    closeable.close();
+                } catch (IOException ignored) {
+                    // ignore
                 }
             }
         }
